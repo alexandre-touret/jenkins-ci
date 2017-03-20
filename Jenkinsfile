@@ -33,8 +33,9 @@ pipeline{
         stage('Release'){
             steps(){
             script{
-                def release= input id: 'release', message: 'test', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
-                echo (release['developmentVersion'])
+                //def release= input id: 'release', message: 'test', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
+                //echo (release['developmentVersion'])
+                echo ("test")
                 }
             }
         }
