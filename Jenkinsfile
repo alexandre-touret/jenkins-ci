@@ -34,7 +34,7 @@ pipeline{
             steps{
                 catchError{
                 withMaven(maven:'maven'){
-                    sh "mvn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
+                    sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
                 }
                 junit "target/test-reports/TEST*.xml"
                 }
