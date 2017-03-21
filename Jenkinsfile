@@ -4,7 +4,6 @@ pipeline{
             booleanParam(name: 'IS_RELEASE', defaultValue: false, description: 'Voulez vous faire une release')
             string(name: 'SVN_URL', defaultValue: 'http://svnhm/svn/eand_src/attitudes/attitudes/trunk/', description: 'URL REPOSITORY SVN')
         }
-
     stages {
      stage ('Init'){
         steps{
@@ -15,6 +14,8 @@ pipeline{
                 echo (release['developmentVersion'])
             }
             }
+         echo "Chargement du fichier jenkins-jee6 ..."
+         def jenkins-jee6= fileloader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git','master',null)
          }
         }
         }
@@ -48,7 +49,7 @@ pipeline{
                 withMaven(maven:'maven'){
                     //sh "mvn deploy -Dmaven.test.skip=true -P jdk8,int"
                 }
-
+                jenkins-jee6.deployInWeblogic()
             }
         }
 
