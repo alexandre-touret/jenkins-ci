@@ -8,7 +8,7 @@ pipeline {
         stage('Init') {
             steps {
                 script {
-                    timeout(time: 5, unit: 'DAYS') {
+                    timeout(time: 1, unit: 'HOURS') {
                         if (params.IS_RELEASE == true) {
                             def release = input id: 'release', message: 'test', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
                             echo(release['developmentVersion'])
@@ -26,7 +26,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                withMaven(maven: 'maven') {
+                withMaven(maven: 'maven-3.2') {
                     sh "mvn clean install -Dmaven.test.skip=true -P jdk8,int"
                 }
             }
@@ -34,7 +34,7 @@ pipeline {
         stage('Test') {
             steps {
                 catchError {
-                    withMaven(maven: 'maven') {
+                    withMaven(maven: 'maven-3.2') {
                         sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
                     }
                     junit "target/test-reports/TEST*.xml"
@@ -46,7 +46,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo "Deploiement"
-                withMaven(maven: 'maven') {
+                withMaven(maven: 'maven-3.2') {
                     sh "mvn deploy -Dmaven.test.skip=true -P jdk8,int"
                 }
                 script{
@@ -59,7 +59,7 @@ pipeline {
             steps() {
                 script {
                     if (params.IS_RELEASE == true) {
-                        withMaven(maven: 'maven') {
+                        withMaven(maven: 'maven-3.2') {
                             sh "mvn release:prepare -Dmaven.test.skip=true -P jdk8,int"
                         }
                     }
