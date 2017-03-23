@@ -14,8 +14,6 @@ pipeline {
                             echo(release['developmentVersion'])
                         }
                     }
-                    echo ">>Chargement du fichier jenkins-jee6 ..."
-                    def jenkinsjee6 = fileLoader.load('src/main/groovy/jenkins-jee6')
                 }
             }
         }
@@ -52,6 +50,8 @@ pipeline {
                     //sh "mvn deploy -Dmaven.test.skip=true -P jdk8,int"
                 }
                 script{
+                    echo ">>Chargement du fichier jenkins-jee6 ..."
+                    def jenkinsjee6 = fileLoader.load('src/main/groovy/jenkins-jee6')
                     jenkinsjee6.deployInWeblogic()
                 }
             }
