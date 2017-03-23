@@ -14,7 +14,7 @@ pipeline {
                             echo(release['developmentVersion'])
                         }
                     }
-                    echo "Chargement du fichier jenkins-jee6 ..."
+                    echo ">>Chargement du fichier jenkins-jee6 ..."
                     def jenkinsjee6 = fileLoader.load('src/main/groovy/jenkins-jee6')
                 }
             }
