@@ -15,7 +15,7 @@ pipeline {
                         }
                     }
                     echo "Chargement du fichier jenkins-jee6 ..."
-                    def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'touret-a')
+                    def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'TOURET-AATGITLAB')
                 }
             }
         }
