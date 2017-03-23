@@ -49,7 +49,7 @@ pipeline {
             steps {
                 echo "Deploiement"
                 withMaven(maven: 'maven-3.2') {
-                    sh "mvn deploy -Dmaven.test.skip=true -P jdk8,int"
+                    //sh "mvn deploy -Dmaven.test.skip=true -P jdk8,int"
                 }
                 script{
                     jenkinsjee6.deployInWeblogic()
