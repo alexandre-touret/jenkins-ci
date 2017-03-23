@@ -21,8 +21,8 @@ pipeline {
         }
         stage('Checkout') {
             steps {
-                echo "Checkout from ${params.SVNURL}"
-                checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVNURL]], workspaceUpdater: [$class: 'UpdateUpdater']])
+                echo "Checkout from ${params.SVN_URL}"
+                checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
             }
         }
         stage('Build') {
