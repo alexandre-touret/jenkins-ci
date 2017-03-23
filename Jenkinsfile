@@ -51,7 +51,7 @@ pipeline {
                 }
                 script{
                     echo ">>Chargement du fichier jenkins-jee6 ..."
-                    def jenkinsjee6 = fileLoader.load('src/main/groovy/jenkins-jee6')
+                    def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'TOURET-AATGITLAB')
                     jenkinsjee6.deployInWeblogic()
                 }
             }
@@ -66,8 +66,6 @@ pipeline {
                         }
                     }
                 }
-
-
             }
         }
     }
