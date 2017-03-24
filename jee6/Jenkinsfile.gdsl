@@ -12,7 +12,9 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo "Checkout from ${params.SVN_URL}"
+                ansiColor('xterm') {
+                    echo "\\e[41m >>> Checkout du repository ${params.SVN_URL} <<<"
+                }
                 checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
 
             }
