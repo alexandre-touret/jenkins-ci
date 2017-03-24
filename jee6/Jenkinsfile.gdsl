@@ -5,18 +5,6 @@ pipeline {
         string(name: 'SVN_URL', defaultValue: 'http://svnhm/svn/eand_src/attitudes/attitudes/trunk/', description: 'URL REPOSITORY SVN')
     }
     stages {
-        stage('Prepare') {
-            steps {
-                script {
-                    timeout(time: 1, unit: 'HOURS') {
-                        if (params.IS_RELEASE == true) {
-                            def release = input id: 'release', message: 'test', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
-                            echo(release['developmentVersion'])
-                        }
-                    }
-                }
-            }
-        }
         stage('Checkout') {
             steps {
                 echo "Checkout from ${params.SVN_URL}"
@@ -49,11 +37,11 @@ pipeline {
                 withMaven(maven: 'maven-3.2') {
                     //sh "mvn deploy -Dmaven.test.skip=true -P jdk8,int"
                 }
-                script{
+                script {
                     echo ">>Chargement du fichier jenkins-jee6 ..."
                     def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'TOURET-AATGITLAB')
 
-                  //  jenkinsjee6.deployInWeblogic('src/main/')
+                    //  jenkinsjee6.deployInWeblogic('src/main/')
                 }
             }
         }
@@ -61,15 +49,17 @@ pipeline {
         stage('Release') {
             steps() {
                 script {
-                    if (params.IS_RELEASE == true) {
-                        echo "Creation de la release ["+release['developmentVersion']+"/"+release['releaseVersion']+"]"
-                        echo(release['developmentVersion'])
-                        echo(release['releaseVersion'])
 
-                        withMaven(maven: 'maven-3.2') {
-                            sh "mvn release:prepare -Dmaven.test.skip=true  -Dmaven.test.skip=true -P jdk8,int"
+                    timeout(time: 1, unit: 'HOURS') {
+                        if (params.IS_RELEASE == true) {
+                            def release = input id: 'release', message: 'test', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
+                            echo ">>> Creation de la release [" + release['developmentVersion'] + "/" + release['releaseVersion'] + "] <<<"
+                            withMaven(maven: 'maven-3.2') {
+                                sh "mvn release:prepare -Dmaven.test.skip=true  -Dmaven.test.skip=true -P jdk8,int"
+                            }
                         }
                     }
+
                 }
             }
         }
