@@ -1,7 +1,7 @@
 pipeline {
     agent any
     parameters {
-        booleanParam(name: 'IS_RELEASE', defaultValue: false, description: 'Voulez vous faire une release')
+        booleanParam(name: 'IS_RELEASE', defaultValue: false, description: 'Voulez vous faire une release ? ATTENTION dans ce cas vous aurez à renseigner des inforrmations lors du stage Release')
         string(name: 'SVN_URL', defaultValue: 'http://svnhm/svn/eand_src/attitudes/attitudes/trunk/', description: 'URL REPOSITORY SVN')
     }
     stages {
@@ -40,7 +40,7 @@ pipeline {
                 script {
                     echo ">>Chargement du fichier jenkins-jee6 ..."
                     def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'TOURET-AATGITLAB')
-                    //  jenkinsjee6.deployInWeblogic('src/main/')
+                    jenkinsjee6.deployInWeblogic('src/main/')
                 }
             }
         }
