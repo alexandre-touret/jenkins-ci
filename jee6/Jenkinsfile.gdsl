@@ -62,6 +62,9 @@ pipeline {
             steps() {
                 script {
                     if (params.IS_RELEASE == true) {
+                        echo(release['developmentVersion'])
+                        echo(release['releaseVersion'])
+
                         withMaven(maven: 'maven-3.2') {
                             sh "mvn release:prepare -Dmaven.test.skip=true  -Dmaven.test.skip=true -P jdk8,int"
                         }
