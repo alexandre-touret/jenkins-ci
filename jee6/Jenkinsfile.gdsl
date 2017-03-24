@@ -57,14 +57,15 @@ pipeline {
             }
         }
         stage('Quality') {
-            echo ">>> Deploiement <<< "
-            script {
-                def sonarScannerHome = tool 'sonar-scanner-2.6.1'
-                withSonarQubeEnv {
-                    sh "${sonarScannerHome}/bin/sonar-scanner target/classes/sonar-project.properties"
+            steps {
+                echo ">>> Deploiement <<< "
+                script {
+                    def sonarScannerHome = tool 'sonar-scanner-2.6.1'
+                    withSonarQubeEnv {
+                        sh "${sonarScannerHome}/bin/sonar-scanner target/classes/sonar-project.properties"
+                    }
                 }
             }
-
         }
         stage('Release') {
             steps() {
