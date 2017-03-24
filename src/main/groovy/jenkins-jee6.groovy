@@ -20,7 +20,6 @@ class WeblogicConnection {
  * @param artifactPath
  * @return
  */
-@NonCPS
 def deployInWeblogic(String artifactName, String artifactPath) {
 
     final CONNECTION = [
@@ -33,7 +32,7 @@ def deployInWeblogic(String artifactName, String artifactPath) {
     println "weblogic deployment ..."
     def WLS_DEPLOYMENT_COMMAND = CONNECTION.installerPath + '-u ' + CONNECTION.user + ' -p ' + CONNECTION.password + ' -t ' + CONNECTION.domain + ' -s ' + CONNECTION.url + ' -a ' + artifactName + ' -z ' + artifactPath
     def process = WLS_DEPLOYMENT_COMMAND.execute()
-    process.text.eachLine { println it }
+    println(process.text)
     return process.exitValue()
 }
 
