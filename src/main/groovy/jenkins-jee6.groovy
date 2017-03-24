@@ -20,6 +20,7 @@ class WeblogicConnection {
  * @param artifactPath
  * @return
  */
+@NonCPS
 def deployInWeblogic(String artifactName, String artifactPath) {
 
     final CONNECTION = [
