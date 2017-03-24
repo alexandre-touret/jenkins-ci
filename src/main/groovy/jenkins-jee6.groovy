@@ -30,7 +30,7 @@ def deployInWeblogic(String artifactName, String artifactPath) {
             url          : "http://wlsintegration1:7001"
     ]
     println "weblogic deployment ..."
-    def WLS_DEPLOYMENT_COMMAND = CONNECTION.installerPath '-u ' + CONNECTION.user + ' -p ' + CONNECTION.password + ' -t ' + CONNECTION.domain + ' -s ' + CONNECTION.url + ' -a ' + artifactName + ' -z ' + artifactPath
+    def WLS_DEPLOYMENT_COMMAND = CONNECTION.installerPath + '-u ' + CONNECTION.user + ' -p ' + CONNECTION.password + ' -t ' + CONNECTION.domain + ' -s ' + CONNECTION.url + ' -a ' + artifactName + ' -z ' + artifactPath
     def process = WLS_DEPLOYMENT_COMMAND.execute()
     process.text.eachLine { println it }
     return process.exitValue()
