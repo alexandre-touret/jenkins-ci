@@ -23,9 +23,9 @@ pipeline {
             steps {
                 catchError {
                     withMaven(maven: 'maven-3.2') {
-                       // sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
+                        sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
                     }
-                    //junit "target/test-reports/TEST*.xml"
+                    junit "target/test-reports/TEST*.xml"
                 }
                 step([$class: 'Mailer', recipients: 'admin@somewhere'])
             }
@@ -46,11 +46,11 @@ pipeline {
         }
 
         stage('Release') {
-            if (params.IS_RELEASE == true) {
-                steps() {
-                    script {
-                        timeout(time: 1, unit: 'HOURS') {
-
+            steps() {
+                echo "Creation de la release : ["+params.IS_RELEASE+"]"
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        if (params.IS_RELEASE == true) {
                             def release = input id: 'release', message: 'test', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
                             echo ">>> Creation de la release [" + release['developmentVersion'] + "/" + release['releaseVersion'] + "] <<<"
                             withMaven(maven: 'maven-3.2') {
