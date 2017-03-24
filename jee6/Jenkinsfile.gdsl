@@ -62,6 +62,9 @@ pipeline {
         stage('Quality') {
             steps {
                 echo ">>> Deploiement <<< "
+                withMaven(maven: 'maven-3.2') {
+                    sh "mvn resources:resources -P jdk8,int"
+                }
                 script {
                     def sonarScannerHome = tool 'sonar-scanner-2.6.1'
                     withSonarQubeEnv {
