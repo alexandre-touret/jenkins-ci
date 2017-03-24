@@ -51,7 +51,8 @@ pipeline {
                     def wars = findFiles(glob: '**/*.war')
                     if (fileExists(wars[0].path)) {
                         echo ">>WAR trouvé ["+wars[0].path+"]<<<"
-                        jenkinsjee6.deployInWeblogic(env.JOB_NAME, wars[0].path)
+                        def workspace = pwd()
+                        jenkinsjee6.deployInWeblogic(env.JOB_NAME, workspace+"/"+wars[0].path)
                     }
                 }
             }
