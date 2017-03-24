@@ -23,9 +23,9 @@ pipeline {
             steps {
                 catchError {
                     withMaven(maven: 'maven-3.2') {
-                        sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
+                     //   sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
                     }
-                    junit "target/test-reports/TEST*.xml"
+                    //junit "target/test-reports/TEST*.xml"
                 }
                 step([$class: 'Mailer', recipients: 'admin@somewhere'])
             }
