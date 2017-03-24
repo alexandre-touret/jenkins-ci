@@ -51,10 +51,10 @@ pipeline {
                 script {
                     timeout(time: 1, unit: 'HOURS') {
                         if (params.IS_RELEASE == true) {
-                            def release = input id: 'release', message: 'test', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
+                            def release = input id: 'release', message: 'Informations de la releaser à créer', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
                             echo ">>> Creation de la release [" + release['developmentVersion'] + "/" + release['releaseVersion'] + "] <<<"
                             withMaven(maven: 'maven-3.2') {
-                                sh "mvn release:prepare -Dmaven.test.skip=true  -Dmaven.test.skip=true -P jdk8,int"
+                             //   sh "mvn release:prepare -Dmaven.test.skip=true  -Dmaven.test.skip=true -P jdk8,int"
                             }
                         }
                     }
