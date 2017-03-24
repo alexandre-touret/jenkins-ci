@@ -1,5 +1,10 @@
 pipeline {
     agent any
+    options {
+        // Only keep the 10 most recent builds
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
     parameters {
         booleanParam(name: 'IS_RELEASE', defaultValue: false, description: 'Voulez vous faire une release ? ATTENTION dans ce cas vous aurez à renseigner des inforrmations lors du stage Release')
         string(name: 'SVN_URL', defaultValue: 'http://svnhm/svn/eand_src/attitudes/attitudes/trunk/', description: 'URL REPOSITORY SVN')
@@ -23,7 +28,7 @@ pipeline {
             steps {
                 catchError {
                     withMaven(maven: 'maven-3.2') {
-                     //   sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
+                        //   sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
                     }
                     //junit "target/test-reports/TEST*.xml"
                 }
@@ -31,6 +36,8 @@ pipeline {
             }
 
         }
+
+
         stage('Deploy') {
             steps {
                 echo "Deploiement"
@@ -38,23 +45,37 @@ pipeline {
                     //sh "mvn deploy -Dmaven.test.skip=true -P jdk8,int"
                 }
                 script {
-                    echo ">>Chargement du fichier jenkins-jee6 ..."
+                    echo ">>Chargement du fichier jenkins-jee6 ... <<<"
                     def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'TOURET-AATGITLAB')
-                    jenkinsjee6.deployInWeblogic('src/main/')
+                    echo ">>Recherche du WAR a deployer ... <<<"
+                    def wars = findFiles(glob: '**/*.war')
+                    if (fileExists(wars[0].path)) {
+                        echo ">>WAR trouvé ["+wars[0].path+"]<<<"
+                        jenkinsjee6.deployInWeblogic(env.JOB_NAME, wars[0].path)
+                    }
                 }
             }
         }
+        stage('Quality') {
+            echo ">>> Deploiement <<< "
+            script {
+                def sonarScannerHome = tool 'sonar-scanner-2.6.1'
+                withSonarQubeEnv {
+                    sh "${sonarScannerHome}/bin/sonar-scanner target/classes/sonar-project.properties"
+                }
+            }
 
+        }
         stage('Release') {
             steps() {
-                echo "Creation de la release : ["+params.IS_RELEASE+"]"
+                echo ">>> Creation de la release : [" + params.IS_RELEASE + "] <<<"
                 script {
                     timeout(time: 1, unit: 'HOURS') {
                         if (params.IS_RELEASE == true) {
                             def release = input id: 'release', message: 'Informations de la releaser à créer', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
                             echo ">>> Creation de la release [" + release['developmentVersion'] + "/" + release['releaseVersion'] + "] <<<"
                             withMaven(maven: 'maven-3.2') {
-                             //   sh "mvn release:prepare -Dmaven.test.skip=true  -Dmaven.test.skip=true -P jdk8,int"
+                                sh "sonar-scanner"
                             }
                         }
                     }
