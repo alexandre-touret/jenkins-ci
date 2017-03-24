@@ -62,6 +62,7 @@ pipeline {
             steps() {
                 script {
                     if (params.IS_RELEASE == true) {
+                        echo "Creation de la release ["+release['developmentVersion']+"/"+release['releaseVersion']+"]"
                         echo(release['developmentVersion'])
                         echo(release['releaseVersion'])
 
