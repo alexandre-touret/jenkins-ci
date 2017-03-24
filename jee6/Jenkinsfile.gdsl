@@ -52,7 +52,7 @@ pipeline {
                     echo ">>Recherche du WAR a deployer ... <<<"
                     def wars = findFiles(glob: '**/*.war')
                     if (fileExists(wars[0].path)) {
-                        echo ">>WAR trouvé ["+wars[0].path+"]<<<"
+                        echo ">>> WAR trouvé ["+wars[0].path+"]<<<"
                         def workspace = pwd()
                         jenkinsjee6.deployInWeblogic(env.JOB_NAME, workspace+"/"+wars[0].path)
                     }
@@ -69,7 +69,7 @@ pipeline {
                     def sonarScannerHome = tool 'sonar-scanner-2.6.1'
                     def workspace = pwd()
                     withSonarQubeEnv {
-                        sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties"
+                        sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties -e"
                     }
                 }
             }
