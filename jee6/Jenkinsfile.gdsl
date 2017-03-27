@@ -69,7 +69,7 @@ pipeline {
                     def sonarScannerHome = tool 'sonar-scanner-2.6.1'
                     def workspace = pwd()
                     withSonarQubeEnv {
-                        sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties -e"
+                        sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
                     }
                 }
             }
