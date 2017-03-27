@@ -42,7 +42,9 @@ pipeline {
                         echo ">>> WAR trouvé [" + wars[0].path + "]<<<"
                         def workspace = pwd()
                         def isDeploymentOK=jenkinsjee6.deployInWeblogic(env.JOB_NAME, workspace + "/" + wars[0].path)
+                        echo "RETOUR WEBLOGIC : "+isDeploymentOK
                         if(isDeploymentOK != 0){
+
                             error(" Deploiement dans WEBLOGIC KO ")
                         }
 
