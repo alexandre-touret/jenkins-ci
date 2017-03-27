@@ -4,8 +4,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo '>>> Checkout du repository ' + params.SVN_URL + '<<<'
-                checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
+                catchError {
+
+                    echo '>>> Checkout du repository ' + params.SVN_URL + '<<<'
+                    checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
+                }
             }
         }
         stage('Build') {
@@ -74,13 +77,13 @@ pipeline {
                                 sh "mvn --batch-mode release:prepare release:perform -Pjdk8,dev"
                             }
                             // test presence fichier rollback
-                            if (fileExists('pom.xml.releaseBackup')){
+                            if (fileExists('pom.xml.releaseBackup')) {
                                 echo ">>> ROLLBACK de la précédente release <<<"
                                 withMaven(maven: 'maven-3.2') {
                                     sh "mvn release:rollback"
                                 }
                             }
-                            if( fileExists('${workspace}/target/checkout/pom.xml')){
+                            if (fileExists('${workspace}/target/checkout/pom.xml')) {
                                 withMaven(maven: 'maven-3.2') {
                                     sh "mvn clean resources:resources deploy -Pint,jdk8 -f ${workspace}/target/checkout/pom.xml"
                                 }
