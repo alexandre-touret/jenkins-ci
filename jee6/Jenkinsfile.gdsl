@@ -5,10 +5,10 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 
-    parameters {
-        booleanParam(name: 'IS_RELEASE', defaultValue: false, description: 'Voulez vous faire une release ? ATTENTION dans ce cas vous aurez à renseigner des inforrmations lors du stage Release')
+    properties([parameters([booleanParam(defaultValue: false, description: 'Voulez vous faire une RELEASE? ATTENTION dans ce cas vous aurez à renseigner des informations lors du de l\'étape  -- RELEASE --', name: 'IS_RELEASE'), [$class: 'WHideParameterDefinition', defaultValue: 'A RENSEIGNER', description: '', name: 'SVN_URL'], [$class: 'WHideParameterDefinition', defaultValue: 'JDK8', description: '', name: 'JDK']]), pipelineTriggers([])])
 
-    }
+
+
     stages {
         stage('Checkout') {
             steps {
