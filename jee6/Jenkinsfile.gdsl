@@ -41,7 +41,11 @@ pipeline {
                     if (fileExists(wars[0].path)) {
                         echo ">>> WAR trouvé [" + wars[0].path + "]<<<"
                         def workspace = pwd()
-                        jenkinsjee6.deployInWeblogic(env.JOB_NAME, workspace + "/" + wars[0].path)
+                        def isDeploymentOK=jenkinsjee6.deployInWeblogic(env.JOB_NAME, workspace + "/" + wars[0].path)
+                        if(isDeploymentOK != 0){
+                            error(" Deploiement dans WEBLOGIC KO ")
+                        }
+
                     }
                 }
             }
