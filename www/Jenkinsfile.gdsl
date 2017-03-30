@@ -1,0 +1,105 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                catchError {
+                    echo '>>> Checkout du repository ' + params.SVN_URL + '<<<'
+                    checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                echo '>>> Construction et livraison dans ARTIFACTORY'
+                // penser a mettre DEPLOY
+                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                    sh "mvn clean install -Dmaven.test.skip=true -P jdk8,int"
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                catchError {
+                }
+                step([$class: 'Mailer', recipients: 'admin@somewhere'])
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo "Deploiement"
+                script {
+                    echo ">>> Chargement du fichier jenkins-jee6 ... <<<"
+                    def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'TOURET-AATGITLAB')
+                    echo ">>Recherche du ZIP a deployer ... <<<"
+                    def zips = findFiles(glob: '**/*.zip')
+                    if (fileExists(zips[0].path)) {
+                        echo ">>> ZIP trouvé [" + zips[0].path + "]<<<"
+                        def workspace = pwd()
+                        sshagent(credentials:['wls12c']){
+                            sh "scp ${zips[0].path} wls37etu1:/www/wlsintegration1"
+                            sh "ssh wls37etu1 unzip wls37etu1:/www/wlsintegration1/${zips[0].name} -d /www/wlsintegration1/${env.JOB_BASE_NAME}"
+                            sh "ssh wls37etu1 rm /www/wlsintegration1/${zips[0].name}"
+                        }
+                    }
+                }
+            }
+        }
+        stage('Quality') {
+            steps {
+                echo ">>> Qualite SONAR <<< "
+                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                    sh "mvn resources:resources -Pint"
+                }
+                script {
+                    def sonarScannerHome = tool 'sonar-scanner-2.6.1'
+                    def workspace = pwd()
+                    withSonarQubeEnv {
+                        sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
+                    }
+                }
+            }
+        }
+        stage('Release') {
+            steps() {
+                echo ">>> Creation de la release : [" + params.IS_RELEASE + "] <<<"
+                script {
+                    timeout(time: 1, unit: 'HOURS') {
+                        if (params.IS_RELEASE == true) {
+                            def sonarScannerHome = tool 'sonar-scanner-2.6.1'
+                            def workspace = pwd()
+                            def release = input id: 'release', message: 'Informations de la releaser à créer', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
+                            echo ">>> Creation de la release [" + release['developmentVersion'] + "/" + release['releaseVersion'] + "] <<<"
+                            withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                sh "mvn --batch-mode release:prepare release:perform -Pjdk8,dev"
+                            }
+                            // test presence fichier rollback
+                            if (fileExists('pom.xml.releaseBackup')) {
+                                echo ">>> ROLLBACK de la précédente release <<<"
+                                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                    sh "mvn release:rollback"
+                                }
+                            }
+                            if (fileExists('${workspace}/target/checkout/pom.xml')) {
+                                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                    sh "mvn clean resources:resources deploy -Pint,jdk8 -f ${workspace}/target/checkout/pom.xml"
+                                }
+                                withSonarQubeEnv {
+                                    sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/checkout/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
+                                }
+                                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                    sh "mvn clean deploy -Pint,jdk8 -f ${workspace}/target/checkout/pom.xml"
+                                    sh "mvn clean deploy -Prec,jdk8 -f ${workspace}/target/checkout/pom.xml"
+                                    sh "mvn clean deploy -Pppd,jdk8 -f ${workspace}/target/checkout/pom.xml"
+                                    sh "mvn clean deploy -Pprd,jdk8 -f ${workspace}/target/checkout/pom.xml"
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}
