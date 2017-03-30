@@ -38,7 +38,7 @@ pipeline {
                         echo ">>> ZIP trouvé [" + zips[0].path + "]<<<"
                         def workspace = pwd()
                             sh "scp ${zips[0].path} wls12c@wls37etu1:/www/wlsintegration1"
-                            sh "ssh wls12c@wls37etu1 unzip wls37etu1:/www/wlsintegration1/${zips[0].name} -d /www/wlsintegration1/${env.JOB_BASE_NAME}"
+                            sh "ssh wls12c@wls37etu1 'unzip /www/wlsintegration1/${zips[0].name} -d /www/wlsintegration1/${env.JOB_BASE_NAME}'"
                             sh "ssh wls12c@wls37etu1 rm /www/wlsintegration1/${zips[0].name}"
                     }
                 }
