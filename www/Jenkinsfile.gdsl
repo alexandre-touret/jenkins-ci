@@ -26,25 +26,25 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                echo "Deploiement"
-                script {
-                    echo ">>> Chargement du fichier jenkins-jee6 ... <<<"
-                    def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'TOURET-AATGITLAB')
-                    echo ">>Recherche du ZIP a deployer ... <<<"
-                    def zips = findFiles(glob: '**/*.zip')
-                    if (fileExists(zips[0].path)) {
-                        echo ">>> ZIP trouvé [" + zips[0].path + "]<<<"
-                        def workspace = pwd()
-                            sh "scp ${zips[0].path} wls12c@wls37etu1:/www/wlsintegration1"
-                            sh "ssh wls12c@wls37etu1 'rm -rf /www/wlsintegration1/${env.JOB_BASE_NAME}'"
-                            sh "ssh wls12c@wls37etu1 'unzip /www/wlsintegration1/${zips[0].name} -d /www/wlsintegration1/${env.JOB_BASE_NAME}'"
-                            sh "ssh wls12c@wls37etu1 'rm /www/wlsintegration1/${zips[0].name}'"
-                    }
-                }
-            }
-        }
+//        stage('Deploy') {
+//            steps {
+//                echo "Deploiement"
+//                script {
+//                    echo ">>> Chargement du fichier jenkins-jee6 ... <<<"
+//                    def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/seed-jenkins-jee6.git', 'master', 'TOURET-AATGITLAB')
+//                    echo ">>Recherche du ZIP a deployer ... <<<"
+//                    def zips = findFiles(glob: '**/*.zip')
+//                    if (fileExists(zips[0].path)) {
+//                        echo ">>> ZIP trouvé [" + zips[0].path + "]<<<"
+//                        def workspace = pwd()
+//                            sh "scp ${zips[0].path} wls12c@wls37etu1:/www/wlsintegration1"
+//                            sh "ssh wls12c@wls37etu1 'rm -rf /www/wlsintegration1/${env.JOB_BASE_NAME}'"
+//                            sh "ssh wls12c@wls37etu1 'unzip /www/wlsintegration1/${zips[0].name} -d /www/wlsintegration1/${env.JOB_BASE_NAME}'"
+//                            sh "ssh wls12c@wls37etu1 'rm /www/wlsintegration1/${zips[0].name}'"
+//                    }
+//                }
+//            }
+//        }
         stage('Quality') {
             steps {
                 echo ">>> Qualite SONAR <<< "
@@ -85,7 +85,7 @@ pipeline {
                                     sh "mvn clean resources:resources deploy -Pint,jdk8 -f ${workspace}/target/checkout/pom.xml"
                                 }
                                 withSonarQubeEnv {
-                                    sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/checkout/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
+                                    sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/checkout/target/www/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
                                 }
                                 withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                                     sh "mvn clean deploy -Pint,jdk8 -f ${workspace}/target/checkout/pom.xml"
