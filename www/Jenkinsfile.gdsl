@@ -1,3 +1,4 @@
+#!/usr/bin/env groovy
 pipeline {
     agent any
     stages {
@@ -55,7 +56,7 @@ pipeline {
                     def sonarScannerHome = tool 'sonar-scanner-2.6.1'
                     def workspace = pwd()
                     withSonarQubeEnv {
-                        sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
+                        sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/www/resources/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
                     }
                 }
             }
@@ -85,7 +86,7 @@ pipeline {
                                     sh "mvn clean resources:resources deploy -Pint,jdk8 -f ${workspace}/target/checkout/pom.xml"
                                 }
                                 withSonarQubeEnv {
-                                    sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/checkout/target/www/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
+                                    sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/checkout/target/www/resources/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
                                 }
                                 withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                                     sh "mvn clean deploy -Pint,jdk8 -f ${workspace}/target/checkout/pom.xml"
