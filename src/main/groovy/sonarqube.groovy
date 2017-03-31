@@ -9,7 +9,7 @@ def version = '1.0'
  */
 def runQuality() {
     println(">>> Extraction du soanr-project.properties... <<<")
-    withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+    withMaven(maven: 'maven-3.2',jdk:'JDK8') {
         sh "mvn resources:resources -P ${params.PROFIL_JDK},int"
     }
     println(">>> Lancement de SONARQUBE ... <<<")

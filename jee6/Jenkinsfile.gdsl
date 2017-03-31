@@ -1,5 +1,6 @@
 pipeline {
     agent any
+
     stages {
         stage('Checkout') {
             steps {
@@ -13,7 +14,7 @@ pipeline {
             steps {
                 echo '>>> Construction et livraison dans ARTIFACTORY'
                 // penser a mettre DEPLOY
-                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                withMaven(maven: 'maven-3.2',jdk:'JDK8') {
                     sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int -X"
                 }
             }
@@ -21,7 +22,7 @@ pipeline {
         stage('Test') {
             steps {
                 catchError {
-                    withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                    withMaven(maven: 'maven-3.2',jdk:'JDK8') {
                         sh "mvn -fn test -P${params.PROFIL_JDK},int -Daggregate=true -DtestFailureIgnore=true"
                     }
                     junit "target/test-reports/TEST*.xml"
@@ -59,13 +60,13 @@ pipeline {
                             def workspace = pwd()
                             def release = input id: 'release', message: 'Informations de la releaser à créer', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
                             echo ">>> Creation de la release [" + release['developmentVersion'] + "/" + release['releaseVersion'] + "] <<<"
-                            withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                            withMaven(maven: 'maven-3.2',jdk:'JDK8') {
                                 sh "mvn --batch-mode release:prepare release:perform -P${params.PROFIL_JDK},dev"
                             }
                             // test presence fichier rollback
                             if (fileExists('pom.xml.releaseBackup')) {
                                 echo ">>> ROLLBACK de la précédente release <<<"
-                                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                withMaven(maven: 'maven-3.2',jdk:'JDK8') {
                                     sh "mvn release:rollback"
                                 }
                             }
@@ -76,7 +77,7 @@ pipeline {
                                 withSonarQubeEnv {
                                     sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/checkout/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
                                 }
-                                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                withMaven(maven: 'maven-3.2',jdk:'JDK8') {
                                     sh "mvn clean deploy -Pint,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
                                     sh "mvn clean deploy -Prec,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
                                     sh "mvn clean deploy -Pppd,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
