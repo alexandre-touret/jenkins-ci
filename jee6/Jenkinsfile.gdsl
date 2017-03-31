@@ -64,11 +64,11 @@ pipeline {
                 ansiColor('xterm') {
                     echo '\u001B[36m ➡ Creation de la release : [' + params.IS_RELEASE + '] \u001B[0m'
                 }
-
                 script {
-                    def release = fileLoader.fromGit('src/main/groovy/release', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
-                    release.deployInWeblogic('war')
-
+                    if (params.IS_RELEASE) {
+                        def release = fileLoader.fromGit('src/main/groovy/release', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
+                        release.runRelease('maven-3.2', 'JDK8')
+                    }
                 }
             }
         }

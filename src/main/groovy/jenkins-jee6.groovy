@@ -15,10 +15,10 @@ class WeblogicConnection {
 
 /**
  * @TODO : Faire reference a un fichier sur le serveur
- * Deploie dans weblogic
- * @param artifactName
- * @param artifactPath
- * @return
+ * Recherche un livrable et le deploie dans weblogic
+ * Cette fonctionne s appuie sur le shell deploye sur le serveur
+ * @param artifactSuffix Suffixe du livrable (ex. ear)
+ * @return le statut de l execution
  */
 def deployInWeblogic(String artifactSuffix) {
     final CONNECTION = [
@@ -50,6 +50,7 @@ def deployInWeblogic(String artifactSuffix) {
                 pwd() +
                 '/' +
                 artifact[0].path)
+        // execution de la commande SHELL
         def process = WLS_DEPLOYMENT_COMMAND.execute()
         println(process.text)
         process.waitFor()

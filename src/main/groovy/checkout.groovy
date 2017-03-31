@@ -4,7 +4,10 @@
 
 def version = '1.0'
 
-
+/**
+ * Extraection du projet . Pour l'instant SVN
+ * Cette fonction utilise le parametre SVN_URL
+ */
 def checkout() {
     catchError {
         ansiColor('xterm') {

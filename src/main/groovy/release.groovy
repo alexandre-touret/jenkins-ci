@@ -4,12 +4,12 @@
 def version = '1.0'
 
 /**
- * Execute ma commande mvn resources:resources ainsi que la qualimetrie SONAR avec le sonar-scanner
+ * Execute la release
  * @return
  */
 def runRelease(String mavenInstallationId,String jdkInstallationId) {
     timeout(time: 1, unit: 'HOURS') {
-        if (params.IS_RELEASE == true) {
+
             def workspace = pwd()
             def release = input id: 'release', message: 'Informations de la releaser à créer', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
             ansiColor('xterm') {
@@ -34,8 +34,7 @@ def runRelease(String mavenInstallationId,String jdkInstallationId) {
                 def sonarqube = fileLoader.fromGit('src/main/groovy/sonarqube', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
                 sonarqube.runQuality('target/checkout/**/sonar-project.properties')
 
-
-                withMaven(maven: 'maven-3.2', jdk: 'JDK8') {
+                withMaven(maven: mavenInstallationId, jdk: jdkInstallationId) {
                     sh "mvn clean deploy -Pint,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
                     sh "mvn clean deploy -Prec,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
                     sh "mvn clean deploy -Pppd,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
@@ -47,7 +46,7 @@ def runRelease(String mavenInstallationId,String jdkInstallationId) {
                     error("Le fichier [ ${workspace}/target/checkout/pom.xml ] n'existe pas ! ")
                 }
             }
-        }
+
     }
 
 
