@@ -5,14 +5,19 @@ pipeline {
         stage('❶ Checkout') {
             steps {
                 catchError {
-                    echo ' ➡ Checkout du repository ' + params.SVN_URL
+                    ansiColor('xterm') {
+                        echo ' \u001B[36m ➡ Checkout du repository ' + params.SVN_URL + ' \u001B[0m'
+                    }
                     checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
                 }
             }
         }
         stage('\u2777 Build') {
             steps {
-                echo '➡ Construction et livraison dans ARTIFACTORY'
+                ansiColor('xterm') {
+                    echo '\u001B[36m ➡ Construction et livraison dans ARTIFACTORY \u001B[0m'
+                }
+
                 // penser a mettre DEPLOY
                 withMaven(maven: 'maven-3.2', jdk: 'JDK8') {
                     sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int "
@@ -22,17 +27,22 @@ pipeline {
         stage('\u2778 Test') {
             steps {
                 catchError {
-                    withMaven(maven: 'maven-3.2', jdk: 'JDK8') {
-                        //    sh "mvn -fn test -P${params.PROFIL_JDK},int -Daggregate=true -DtestFailureIgnore=true"
+                    ansiColor('xterm') {
+                        echo '\u001B[36m ➡ Execution des tests unitaires \u001B[0m'
                     }
-                    // junit "target/test-reports/TEST*.xml"
+                    withMaven(maven: 'maven-3.2', jdk: 'JDK8') {
+                        sh "mvn -fn test -P${params.PROFIL_JDK},int -Daggregate=true -DtestFailureIgnore=true"
+                    }
+                    junit "target/test-reports/TEST*.xml"
                 }
                 step([$class: 'Mailer', recipients: 'admin@somewhere'])
             }
         }
         stage('\u277A Quality') {
             steps {
-                echo ">>> QUALITE SONARQUBE <<< "
+                ansiColor('xterm') {
+                    echo '\u001B[36m ➡ Qualimetrie SONAR \u001B[0m'
+                }
                 script {
                     def sonarqube = fileLoader.fromGit('src/main/groovy/sonarqube', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
                     // sonarqube.runQuality()
@@ -41,9 +51,11 @@ pipeline {
         }
         stage('\u277B Deploy') {
             steps {
-                echo "\u27A1 Deploiement"
+                ansiColor('xterm'){
+                    echo '\u001B[36m ➡ Deploiement \u001B[0m'
+                }
                 script {
-                    echo ">>> Chargement du fichier jenkins-jee6 ... <<<"
+                    echo "\u2756 Chargement du fichier jenkins-jee6 \u2756"
                     def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
                     jenkinsjee6.deployInWeblogic('war')
                 }
@@ -51,6 +63,11 @@ pipeline {
         }
         stage('\u277C Release') {
             steps() {
+
+                ansiColor('xterm'){
+                    echo '\u001B[36m ➡ Creation de la release : [' + params.IS_RELEASE + '] \u001B[0m'
+                }
+
                 echo "\u27A1 Creation de la release : [" + params.IS_RELEASE + "] "
 
                 script {
