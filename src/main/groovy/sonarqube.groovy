@@ -12,3 +12,5 @@ def runQuality(){
     }
 
 }
+
+return this;
