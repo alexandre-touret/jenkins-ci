@@ -12,10 +12,13 @@ def runQuality(){
     withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
         sh "mvn resources:resources -P ${params.PROFIL_JDK},int"
     }
-
     println("Running SONAR QUALITY...")
     def sonarScannerHome = tool 'sonar-scanner-2.6.1'
     def workspace = pwd()
+    def sonarProjectProperties = findFiles(glob: 'target/**/sonar-project.properties')
+    if (fileExists(sonarProjectProperties[0].path)) {
+        echo ">>> WAR trouvé [" + sonarProjectProperties[0].path + "]<<<"
+    }
     withSonarQubeEnv {
         sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
     }
