@@ -2,15 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
+        stage('❶ Checkout') {
             steps {
                 catchError {
-                    echo '>>> Checkout du repository ' + params.SVN_URL + '\u2776 <<<'
+                    echo '>>> Checkout du repository ' + params.SVN_URL + ' <<<'
                     checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
                 }
             }
         }
-        stage('Build') {
+        stage('\u2777 Build') {
             steps {
                 echo '>>> Construction et livraison dans ARTIFACTORY'
                 // penser a mettre DEPLOY
@@ -19,7 +19,7 @@ pipeline {
                 }
             }
         }
-        stage('Test') {
+        stage('\u2778 Test') {
             steps {
                 catchError {
                     withMaven(maven: 'maven-3.2',jdk:'JDK8') {
