@@ -25,7 +25,7 @@ pipeline {
                     withMaven(maven: 'maven-3.2',jdk:'JDK8') {
                     //    sh "mvn -fn test -P${params.PROFIL_JDK},int -Daggregate=true -DtestFailureIgnore=true"
                     }
-                    junit "target/test-reports/TEST*.xml"
+                   // junit "target/test-reports/TEST*.xml"
                 }
                 step([$class: 'Mailer', recipients: 'admin@somewhere'])
             }
