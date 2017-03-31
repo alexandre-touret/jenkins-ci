@@ -5,7 +5,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 catchError {
-                    echo '>>> Checkout du repository ' + params.SVN_URL + '<<<'
+                    echo '>>> Checkout du repository ' + params.SVN_URL + '\u2776 <<<'
                     checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
                 }
             }
@@ -41,7 +41,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo "\\u27A1 Deploiement"
+                echo "\u27A1 Deploiement"
                 script {
                     echo ">>> Chargement du fichier jenkins-jee6 ... <<<"
                     def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
