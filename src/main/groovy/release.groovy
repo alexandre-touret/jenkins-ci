@@ -43,7 +43,8 @@ def runRelease(String mavenInstallationId,String jdkInstallationId) {
                 }
             }else{
                 ansiColor('xterm') {
-                    echo "\u274C \u001B[31m ROLLBACK de la précédente release \u001B[0m"
+                    echo "\u274C \u001B[31m Le fichier [ ${workspace}/target/checkout/pom.xml ] n'existe pas ! \u001B[0m"
+                    error("Le fichier [ ${workspace}/target/checkout/pom.xml ] n'existe pas ! ")
                 }
             }
         }
