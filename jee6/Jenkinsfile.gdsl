@@ -4,12 +4,8 @@ pipeline {
     stages {
         stage('❶ Checkout') {
             steps {
-                catchError {
-                    ansiColor('xterm') {
-                        echo ' \u001B[36m ➡ Checkout du repository ' + params.SVN_URL + ' \u001B[0m'
-                    }
-                    checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
-                }
+                def checkout = fileLoader.fromGit('src/main/groovy/checkout', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
+                checkout.checkout()
             }
         }
         stage('\u2777 Build') {
