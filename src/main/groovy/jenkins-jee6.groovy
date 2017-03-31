@@ -20,8 +20,7 @@ class WeblogicConnection {
  * @param artifactPath
  * @return
  */
-def deployInWeblogic(String artifactName, String artifactPath) {
-
+def deployInWeblogic() {
     final CONNECTION = [
             installerPath: "/logiciels/scripts/install-application-wls12c.sh ",
             user         : "weblogic ",
@@ -29,11 +28,25 @@ def deployInWeblogic(String artifactName, String artifactPath) {
             domain       : "INTRANETHM_IC1",
             url          : "http://wlsintegration1:7001"
     ]
-    println "Deploiement du livrable "+artifactPath+' sur '+CONNECTION.url
-    def WLS_DEPLOYMENT_COMMAND = CONNECTION.installerPath + '-u ' + CONNECTION.user + ' -p ' + CONNECTION.password + ' -t ' + CONNECTION.domain + ' -s ' + CONNECTION.url + ' -a ' + artifactName + ' -z ' + artifactPath
-    def process = WLS_DEPLOYMENT_COMMAND.execute()
-    println(process.text)
-    return process.exitValue()
+    def status = 0
+    def artifact = findFiles(glob: '**/*.{ear|war}')
+    if (fileExists(artifact[0].path)) {
+        echo ">>> Livrable trouvé [" + artifact[0].path + "]<<<"
+        def WLS_DEPLOYMENT_COMMAND = CONNECTION.installerPath + '-u ' + CONNECTION.user + ' -p ' + CONNECTION.password + ' -t ' + CONNECTION.domain + ' -s ' + CONNECTION.url + ' -a ' + $ {
+            env.JOB_NAME
+        } + ' -z ' + artifact[0].path
+        println "Deploiement du livrable " + artifact[0].path + ' sur ' + CONNECTION.url
+        def process = WLS_DEPLOYMENT_COMMAND.execute()
+        println(process.text)
+        def isDeploymentOK = process.exitValue()
+        echo ">>> RETOUR WEBLOGIC : " + isDeploymentOK + " <<<"
+        if (isDeploymentOK != 0) {
+            error(" /!\\  Deploiement dans WEBLOGIC KO /!\\")
+        }
+        status = isDeploymentOK
+    }
+
+    return status
 }
 
 return this;
