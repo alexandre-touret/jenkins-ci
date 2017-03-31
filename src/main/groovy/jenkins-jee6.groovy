@@ -35,13 +35,13 @@ def deployInWeblogic() {
         def WLS_DEPLOYMENT_COMMAND = CONNECTION.installerPath + '-u ' + CONNECTION.user + ' -p ' + CONNECTION.password + ' -t ' + CONNECTION.domain + ' -s ' + CONNECTION.url + ' -a ' + $ {
             env.JOB_NAME
         } + ' -z ' + artifact[0].path
-        println "Deploiement du livrable " + artifact[0].path + ' sur ' + CONNECTION.url
+        println "\\u27A1 Deploiement du livrable " + artifact[0].path + ' sur ' + CONNECTION.url
         def process = WLS_DEPLOYMENT_COMMAND.execute()
         println(process.text)
         def isDeploymentOK = process.exitValue()
         echo ">>> RETOUR WEBLOGIC : " + isDeploymentOK + " <<<"
         if (isDeploymentOK != 0) {
-            error(" /!\\  Deploiement dans WEBLOGIC KO /!\\")
+            error(" \\u274C  Deploiement dans WEBLOGIC KO ")
         }
         status = isDeploymentOK
     }

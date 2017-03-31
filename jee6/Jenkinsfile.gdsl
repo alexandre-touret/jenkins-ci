@@ -41,7 +41,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo "Deploiement"
+                echo "\\u27A1 Deploiement"
                 script {
                     echo ">>> Chargement du fichier jenkins-jee6 ... <<<"
                     def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
