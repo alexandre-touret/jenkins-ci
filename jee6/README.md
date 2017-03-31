@@ -13,12 +13,12 @@ Déclarer que ce job nécessite des paramètres
 
 Paramètres nécessaires
 ----------------------
-###URL SVN
+### URL SVN
 * Name : SVN_URL
 * Type de paramètre : Hidden Parameter
 * Default Value : renseigner l'url du repository
 
-###Test de Release
+### Test de Release
 * Name : IS_RELEASE
 * Type de paramètre : Boolean
 * Default Value : false
