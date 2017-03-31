@@ -29,7 +29,8 @@ def deployInWeblogic() {
             url          : "http://wlsintegration1:7001"
     ]
     def status = 0
-    def artifact = findFiles(glob: '**/*.{ear|war}')
+    def workspace = pwd()
+    def artifact = findFiles(glob: ${workspace}+'/target/**/*.?ar}')
     if (fileExists(artifact[0].path)) {
         echo ">>> Livrable trouvé [" + artifact[0].path + "]<<<"
         def WLS_DEPLOYMENT_COMMAND = CONNECTION.installerPath + '-u ' + CONNECTION.user + ' -p ' + CONNECTION.password + ' -t ' + CONNECTION.domain + ' -s ' + CONNECTION.url + ' -a ' + $ {
@@ -44,6 +45,8 @@ def deployInWeblogic() {
             error(" \\u274C  Deploiement dans WEBLOGIC KO ")
         }
         status = isDeploymentOK
+    }else{
+        error("Aucun fichier n'est disponible pour l")
     }
 
     return status

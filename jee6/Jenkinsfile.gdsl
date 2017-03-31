@@ -15,7 +15,7 @@ pipeline {
                 echo '>>> Construction et livraison dans ARTIFACTORY'
                 // penser a mettre DEPLOY
                 withMaven(maven: 'maven-3.2',jdk:'JDK8') {
-                    sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int -X"
+                    sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int "
                 }
             }
         }
