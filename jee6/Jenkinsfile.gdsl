@@ -13,7 +13,7 @@ pipeline {
             steps {
                 echo '>>> Construction et livraison dans ARTIFACTORY'
                 // penser a mettre DEPLOY
-                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                     sh "mvn clean install -Dmaven.test.skip=true -P ${params.PROFIL_JDK},int"
                 }
             }
@@ -21,7 +21,7 @@ pipeline {
         stage('Test') {
             steps {
                 catchError {
-                    withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                    withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                         sh "mvn -fn test -P jdk8,int -Daggregate=true -DtestFailureIgnore=true"
                     }
                     junit "target/test-reports/TEST*.xml"
@@ -33,19 +33,20 @@ pipeline {
         stage('Quality') {
             steps {
                 echo ">>> Deploiement <<< "
-                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                     sh "mvn resources:resources -P ${params.PROFIL_JDK},int"
                 }
-                def sonarqube = fileLoader.fromGit('src/main/groovy/sonarqube', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
-                sonarqube.runQuality()
-
-               /* script {
-                    def sonarScannerHome = tool 'sonar-scanner-2.6.1'
-                    def workspace = pwd()
-                    withSonarQubeEnv {
-                        sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
-                    }
-                }*/
+                script {
+                    def sonarqube = fileLoader.fromGit('src/main/groovy/sonarqube', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
+                    sonarqube.runQuality()
+                }
+                /* script {
+                     def sonarScannerHome = tool 'sonar-scanner-2.6.1'
+                     def workspace = pwd()
+                     withSonarQubeEnv {
+                         sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
+                     }
+                 }*/
             }
         }
         stage('Deploy') {
@@ -59,9 +60,9 @@ pipeline {
                     if (fileExists(wars[0].path)) {
                         echo ">>> WAR trouvé [" + wars[0].path + "]<<<"
                         def workspace = pwd()
-                        def isDeploymentOK=jenkinsjee6.deployInWeblogic(env.JOB_NAME, workspace + "/" + wars[0].path)
-                        echo "RETOUR WEBLOGIC : "+isDeploymentOK
-                        if(isDeploymentOK != 0){
+                        def isDeploymentOK = jenkinsjee6.deployInWeblogic(env.JOB_NAME, workspace + "/" + wars[0].path)
+                        echo "RETOUR WEBLOGIC : " + isDeploymentOK
+                        if (isDeploymentOK != 0) {
                             error(" /!\\  Deploiement dans WEBLOGIC KO ")
                         }
                     }
@@ -78,24 +79,24 @@ pipeline {
                             def workspace = pwd()
                             def release = input id: 'release', message: 'Informations de la releaser à créer', parameters: [string(defaultValue: '1.0.0-SNAPSHOT', description: 'New SNAPSHOT', name: 'developmentVersion'), string(defaultValue: '1.0.0_01', description: 'New release', name: 'releaseVersion')], submitterParameter: 'submitter'
                             echo ">>> Creation de la release [" + release['developmentVersion'] + "/" + release['releaseVersion'] + "] <<<"
-                            withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                            withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                                 sh "mvn --batch-mode release:prepare release:perform -P${params.PROFIL_JDK},dev"
                             }
                             // test presence fichier rollback
                             if (fileExists('pom.xml.releaseBackup')) {
                                 echo ">>> ROLLBACK de la précédente release <<<"
-                                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                                     sh "mvn release:rollback"
                                 }
                             }
                             if (fileExists('${workspace}/target/checkout/pom.xml')) {
-                                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                                     sh "mvn clean resources:resources deploy -Pint,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
                                 }
                                 withSonarQubeEnv {
                                     sh "${sonarScannerHome}/bin/sonar-scanner -Dproject.settings=${workspace}/target/checkout/target/classes/sonar-project.properties  -Dsonar.java.binaries=target/classes -e "
                                 }
-                                withEnv(["JAVA_HOME=${ tool 'JDK8' }", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                                     sh "mvn clean deploy -Pint,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
                                     sh "mvn clean deploy -Prec,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
                                     sh "mvn clean deploy -Pppd,${params.PROFIL_JDK} -f ${workspace}/target/checkout/pom.xml"
