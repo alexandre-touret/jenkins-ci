@@ -21,7 +21,7 @@ pipeline {
                 }
 
                 // penser a mettre DEPLOY
-                withMaven(maven: ${environment.MVN_VERSION}, jdk: ${environment.JDK_VERSION}) {
+                withMaven(maven: env.MVN_VERSION, jdk: env.JDK_VERSION) {
                     sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int "
                 }
             }
