@@ -23,6 +23,7 @@ Afin de pouvoir exécuter ces scripts, il est nécessaire d'avoir installé au p
 * Pipeline Maven Integration Plugin
 * Pipeline Aggregator
 * Blue Ocean *** ( suite de plugins )
+* ANSICOLOR
 
 
 Utilisation standard
