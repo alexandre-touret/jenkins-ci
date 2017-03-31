@@ -29,10 +29,10 @@ def deployInWeblogic(String artifactSuffix) {
             url          : "http://wlsintegration1:7001"
     ]
     def status = 0
-    def artifact = findFiles(glob: '**/*.'+artifactSuffix)
+    def artifact = findFiles(glob: '**/*.' + artifactSuffix)
     if (fileExists(artifact[0].path)) {
         echo "\u2622 Livrable trouvé [" + artifact[0].path + "] \u2622 "
-        println "\u27A1 Deploiement du livrable " + env.JOB_NAME+"  -->  "+artifact[0].path + ' sur ' + CONNECTION.url
+        println "\u27A1 Deploiement du de l'application " + env.JOB_NAME + "  avec le livrable  " + artifact[0].path + ' sur ' + CONNECTION.url
         def WLS_DEPLOYMENT_COMMAND = (CONNECTION.installerPath +
                 '-u ' +
                 CONNECTION.user +
@@ -45,19 +45,23 @@ def deployInWeblogic(String artifactSuffix) {
                 ' -a ' +
                 env.JOB_NAME +
                 ' -z ' +
-                pwd()+
-                '/'+
+                pwd() +
+                '/' +
                 artifact[0].path)
         def process = WLS_DEPLOYMENT_COMMAND.execute()
         println(process.text)
         def isDeploymentOK = process.exitValue()
         echo "\u27A1 RETOUR WEBLOGIC : " + isDeploymentOK
         if (isDeploymentOK != 0) {
-            error(" \u274C  \u001B[31m Deploiement dans WEBLOGIC KO \u001B[0m")
+            ansiColor('xterm') {
+                error(" \u274C  \u001B[31m Deploiement dans WEBLOGIC KO \u001B[0m")
+            }
         }
         status = isDeploymentOK
-    }else{
-        error("\u274C \u001B[31m Aucun fichier n'est disponible pour le déploiement \u001B[0m \u274C ")
+    } else {
+        ansiColor('xterm') {
+            error("\u274C \u001B[31m Aucun fichier n'est disponible pour le déploiement \u001B[0m \u274C ")
+        }
     }
 
     return status

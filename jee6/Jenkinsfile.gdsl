@@ -51,7 +51,7 @@ pipeline {
         }
         stage('\u277C Release') {
             steps() {
-                echo ">>> Creation de la release : [" + params.IS_RELEASE + "] <<<"
+                echo "\u27A1 Creation de la release : [" + params.IS_RELEASE + "] "
 
                 script {
                     currentBuild.displayName = release['releaseVersion']
@@ -92,5 +92,8 @@ pipeline {
                 }
             }
         }
+    }
+    stage('\u277D GCL') {
+
     }
 }
