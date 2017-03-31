@@ -53,8 +53,8 @@ pipeline {
         stage('Release') {
             steps() {
                 echo ">>> Creation de la release : [" + params.IS_RELEASE + "] <<<"
-                currentBuild.displayName = release['releaseVersion']
-                currentBuild.description = "Creation de la release ${release['releaseVersion']}"
+                //currentBuild.displayName = release['releaseVersion']
+                //currentBuild.description = "Creation de la release ${release['releaseVersion']}"
                 script {
                     timeout(time: 1, unit: 'HOURS') {
                         if (params.IS_RELEASE == true) {
