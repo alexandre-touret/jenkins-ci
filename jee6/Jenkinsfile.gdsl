@@ -14,7 +14,7 @@ pipeline {
                 echo '>>> Construction et livraison dans ARTIFACTORY'
                 // penser a mettre DEPLOY
                 withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
-                    sh "mvn clean install -Dmaven.test.skip=true -P ${params.PROFIL_JDK},int"
+                    sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int -X"
                 }
             }
         }
@@ -22,14 +22,13 @@ pipeline {
             steps {
                 catchError {
                     withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
-                        sh "mvn -fn test -P ${params.PROFIL_JDK},int -Daggregate=true -DtestFailureIgnore=true"
+                        sh "mvn -fn test -P${params.PROFIL_JDK},int -Daggregate=true -DtestFailureIgnore=true"
                     }
                     junit "target/test-reports/TEST*.xml"
                 }
                 step([$class: 'Mailer', recipients: 'admin@somewhere'])
             }
         }
-
         stage('Quality') {
             steps {
                 echo ">>> QUALITE SONARQUBE <<< "
