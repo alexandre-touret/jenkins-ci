@@ -33,7 +33,7 @@ def deployInWeblogic(String artifactSuffix) {
     if (fileExists(artifact[0].path)) {
         ansiColor('xterm') {
             echo "\u2622 \u001B[32m Livrable trouvé [" + artifact[0].path + "] \u001B[0m \u2622 "
-            echo "\u27A1 \u001B[32m Deploiement du de l'application " + env.JOB_NAME + "  avec le livrable  " + artifact[0].path + ' sur ' + CONNECTION.url+"\u001B[0m"
+            echo "\u27A1 \u001B[32m Deploiement du de l'application " + env.JOB_NAME + "  avec le livrable  " + artifact[0].path + ' sur ' + CONNECTION.url + "\u001B[0m"
         }
         def WLS_DEPLOYMENT_COMMAND = (CONNECTION.installerPath +
                 '-u ' +
@@ -56,7 +56,7 @@ def deployInWeblogic(String artifactSuffix) {
         echo "\u27A1 RETOUR WEBLOGIC : " + isDeploymentOK
         if (isDeploymentOK != 0) {
             ansiColor('xterm') {
-                error(" \u274C  \u001B[31m Deploiement dans WEBLOGIC KO \u001B[0m")
+                echo " \u274C  \u001B[31m Deploiement dans WEBLOGIC KO \u001B[0m"
             }
         }
         status = isDeploymentOK
