@@ -23,7 +23,7 @@ pipeline {
             steps {
                 catchError {
                     withMaven(maven: 'maven-3.2',jdk:'JDK8') {
-                        sh "mvn -fn test -P${params.PROFIL_JDK},int -Daggregate=true -DtestFailureIgnore=true"
+                    //    sh "mvn -fn test -P${params.PROFIL_JDK},int -Daggregate=true -DtestFailureIgnore=true"
                     }
                     junit "target/test-reports/TEST*.xml"
                 }
@@ -35,7 +35,7 @@ pipeline {
                 echo ">>> QUALITE SONARQUBE <<< "
                 script {
                     def sonarqube = fileLoader.fromGit('src/main/groovy/sonarqube', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
-                    sonarqube.runQuality()
+                   // sonarqube.runQuality()
                 }
             }
         }
