@@ -21,7 +21,7 @@ pipeline {
                 }
 
                 // penser a mettre DEPLOY
-                withMaven(maven: $MVN_VERSION, jdk: $JDK_VERSION) {
+                withMaven(maven: ${MVN_VERSION}, jdk: ${JDK_VERSION}) {
                     sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int "
                 }
             }
@@ -47,7 +47,7 @@ pipeline {
                 }
                 script {
                     def sonarqube = fileLoader.fromGit('src/main/groovy/sonarqube', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
-                    sonarqube.runQuality('maven-3.2', 'JDK8')
+                    sonarqube.runQuality($MVN_VERSION,$JDK_VERSION)
                 }
             }
         }
@@ -71,7 +71,7 @@ pipeline {
                 script {
                     if (params.IS_RELEASE) {
                         def release = fileLoader.fromGit('src/main/groovy/release', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
-                        release.runRelease('maven-3.2', 'JDK8')
+                        release.runRelease($MVN_VERSION,$JDK_VERSION)
                     }
                 }
             }
