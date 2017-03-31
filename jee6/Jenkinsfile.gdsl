@@ -92,8 +92,11 @@ pipeline {
                 }
             }
         }
+        stage('\u277D GCL') {
+        steps(){
+            echo "\u27A1 Mise en GCL "
+        }
+        }
     }
-    stage('\u277D GCL') {
 
-    }
 }
