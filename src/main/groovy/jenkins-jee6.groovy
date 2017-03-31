@@ -57,6 +57,7 @@ def deployInWeblogic(String artifactSuffix) {
         if (isDeploymentOK != 0) {
             ansiColor('xterm') {
                 echo " \u274C  \u001B[31m Deploiement dans WEBLOGIC KO \u001B[0m"
+                error("Deploiement dans WEBLOGIC KO ")
             }
         }
         status = isDeploymentOK
