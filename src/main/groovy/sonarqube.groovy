@@ -4,6 +4,7 @@
 def version = '1.0'
 
 def runQuality(){
+    println("Running SONAR QUALITY...")
     def sonarScannerHome = tool 'sonar-scanner-2.6.1'
     def workspace = pwd()
     withSonarQubeEnv {
