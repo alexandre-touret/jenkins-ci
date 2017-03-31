@@ -45,17 +45,17 @@ pipeline {
                 script {
                     echo ">>> Chargement du fichier jenkins-jee6 ... <<<"
                     def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
-                    jenkinsjee6.deployInWeblogic()
+                    jenkinsjee6.deployInWeblogic('war')
                 }
-
             }
         }
         stage('Release') {
             steps() {
                 echo ">>> Creation de la release : [" + params.IS_RELEASE + "] <<<"
-                //currentBuild.displayName = release['releaseVersion']
-                //currentBuild.description = "Creation de la release ${release['releaseVersion']}"
+
                 script {
+                    currentBuild.displayName = release['releaseVersion']
+                    currentBuild.description = "Creation de la release ${release['releaseVersion']}"
                     timeout(time: 1, unit: 'HOURS') {
                         if (params.IS_RELEASE == true) {
                             def sonarScannerHome = tool 'sonar-scanner-2.6.1'
