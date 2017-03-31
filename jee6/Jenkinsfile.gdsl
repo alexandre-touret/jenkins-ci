@@ -13,7 +13,7 @@ pipeline {
             steps {
                 echo '>>> Construction et livraison dans ARTIFACTORY'
                 // penser a mettre DEPLOY
-                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH+MAVEN=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
+                withEnv(["JAVA_HOME=${tool 'JDK8'}", "PATH=${tool 'maven-3.2'}/bin:${env.JAVA_HOME}/bin"]) {
                     sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int -X"
                 }
             }
