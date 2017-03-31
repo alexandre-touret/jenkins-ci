@@ -31,8 +31,10 @@ def deployInWeblogic(String artifactSuffix) {
     def status = 0
     def artifact = findFiles(glob: '**/*.' + artifactSuffix)
     if (fileExists(artifact[0].path)) {
-        echo "\u2622 Livrable trouvé [" + artifact[0].path + "] \u2622 "
-        println "\u27A1 Deploiement du de l'application " + env.JOB_NAME + "  avec le livrable  " + artifact[0].path + ' sur ' + CONNECTION.url
+        ansiColor('xterm') {
+            echo "\u2622 \u001B[32m Livrable trouvé [" + artifact[0].path + "] \u001B[0m \u2622 "
+            echo "\u27A1 \u001B[32m Deploiement du de l'application " + env.JOB_NAME + "  avec le livrable  " + artifact[0].path + ' sur ' + CONNECTION.url+"\u001B[0m"
+        }
         def WLS_DEPLOYMENT_COMMAND = (CONNECTION.installerPath +
                 '-u ' +
                 CONNECTION.user +
