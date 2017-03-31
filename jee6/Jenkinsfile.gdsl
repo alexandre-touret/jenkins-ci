@@ -5,14 +5,14 @@ pipeline {
         stage('❶ Checkout') {
             steps {
                 catchError {
-                    echo '>>> Checkout du repository ' + params.SVN_URL + ' <<<'
+                    echo ' ➡ Checkout du repository ' + params.SVN_URL
                     checkout([$class: 'SubversionSCM', additionalCredentials: [], excludedCommitMessages: '', excludedRegions: '', excludedRevprop: '', excludedUsers: '', filterChangelog: false, ignoreDirPropChanges: false, includedRegions: '', locations: [[credentialsId: 'eandx00atsvn', depthOption: 'infinity', ignoreExternalsOption: true, local: '.', remote: params.SVN_URL]], workspaceUpdater: [$class: 'UpdateUpdater']])
                 }
             }
         }
         stage('\u2777 Build') {
             steps {
-                echo '>>> Construction et livraison dans ARTIFACTORY'
+                echo '➡ Construction et livraison dans ARTIFACTORY'
                 // penser a mettre DEPLOY
                 withMaven(maven: 'maven-3.2', jdk: 'JDK8') {
                     sh "mvn clean install -Dmaven.test.skip=true -P${params.PROFIL_JDK},int "

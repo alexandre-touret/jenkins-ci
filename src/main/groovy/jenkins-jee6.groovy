@@ -52,6 +52,7 @@ def deployInWeblogic(String artifactSuffix) {
                 artifact[0].path)
         def process = WLS_DEPLOYMENT_COMMAND.execute()
         println(process.text)
+        process.waitFor()
         def isDeploymentOK = process.exitValue()
         echo "\u27A1 RETOUR WEBLOGIC : " + isDeploymentOK
         if (isDeploymentOK != 0) {
