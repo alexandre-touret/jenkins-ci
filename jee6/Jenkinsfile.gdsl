@@ -4,8 +4,10 @@ pipeline {
     stages {
         stage('❶ Checkout') {
             steps {
-                def checkout = fileLoader.fromGit('src/main/groovy/checkout', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
-                checkout.checkout()
+                script {
+                    def checkout = fileLoader.fromGit('src/main/groovy/checkout', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
+                    checkout.checkout()
+                }
             }
         }
         stage('\u2777 Build') {
@@ -41,7 +43,7 @@ pipeline {
                 }
                 script {
                     def sonarqube = fileLoader.fromGit('src/main/groovy/sonarqube', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
-                     sonarqube.runQuality('maven-3.2','JDK8')
+                    sonarqube.runQuality('maven-3.2', 'JDK8')
                 }
             }
         }
