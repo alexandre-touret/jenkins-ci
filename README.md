@@ -29,6 +29,11 @@ Utilisation standard
 ====================
 Il y a un seul fichier JENKINSFILE pour tous les projets d'un même type (ex. projet JEE6)
 
+### Types de projets supportés
+1. [JEE6](/jee6/README.md)
+2. [WWW (pour projets JEE6)](/www/README.md)
+3. ANGULAR ( Stay tuned ...)
+
 
 Workflow commun à tous les jobs
 ===============================
@@ -39,3 +44,5 @@ Workflow commun à tous les jobs
 5. Deploy (Déploiement du binaire vers l'environnement d'exécution d'intégration)
 6. Release ( Création de la release )
 7. GCL (Déploiement en GCL)
+
+
