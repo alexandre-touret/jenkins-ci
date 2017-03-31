@@ -31,7 +31,7 @@ def deployInWeblogic(String artifactSuffix) {
     def status = 0
     def artifact = findFiles(glob: '**/*.'+artifactSuffix)
     if (fileExists(artifact[0].path)) {
-        echo "\u2622 Livrable trouvé [" + artifact[0].path + "] \u2622 <<<"
+        echo "\u2622 Livrable trouvé [" + artifact[0].path + "] \u2622 "
         println "\u27A1 Deploiement du livrable " + env.JOB_NAME+"  -->  "+artifact[0].path + ' sur ' + CONNECTION.url
         def WLS_DEPLOYMENT_COMMAND = (CONNECTION.installerPath +
                 '-u ' +
@@ -45,6 +45,8 @@ def deployInWeblogic(String artifactSuffix) {
                 ' -a ' +
                 env.JOB_NAME +
                 ' -z ' +
+                pwd()+
+                '/'+
                 artifact[0].path)
         def process = WLS_DEPLOYMENT_COMMAND.execute()
         println(process.text)
@@ -55,7 +57,7 @@ def deployInWeblogic(String artifactSuffix) {
         }
         status = isDeploymentOK
     }else{
-        error("\u274C \\u001B[31m Aucun fichier n'est disponible pour le déploiement \u001B[0m \u274C <<<")
+        error("\u274C \u001B[31m Aucun fichier n'est disponible pour le déploiement \u001B[0m \u274C ")
     }
 
     return status

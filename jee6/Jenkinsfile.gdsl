@@ -30,7 +30,7 @@ pipeline {
                 step([$class: 'Mailer', recipients: 'admin@somewhere'])
             }
         }
-        stage('\u2779 Quality') {
+        stage('\u277A Quality') {
             steps {
                 echo ">>> QUALITE SONARQUBE <<< "
                 script {
@@ -39,7 +39,7 @@ pipeline {
                 }
             }
         }
-        stage('\u2780 Deploy') {
+        stage('\u277B Deploy') {
             steps {
                 echo "\u27A1 Deploiement"
                 script {
@@ -49,7 +49,7 @@ pipeline {
                 }
             }
         }
-        stage('\u2781 Release') {
+        stage('\u277C Release') {
             steps() {
                 echo ">>> Creation de la release : [" + params.IS_RELEASE + "] <<<"
 
