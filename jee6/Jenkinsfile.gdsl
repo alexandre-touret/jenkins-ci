@@ -57,8 +57,8 @@ pipeline {
                     echo '\u001B[36m ➡ Deploiement \u001B[0m'
                 }
                 script {
-                    echo "\u2756 Chargement du fichier jenkins-jee6 \u2756"
-                    def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-jee6', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
+                    echo "\u2756 Chargement du fichier jenkins-Jee6 \u2756"
+                    def jenkinsjee6 = fileLoader.fromGit('src/main/groovy/jenkins-Jee6', 'https://gitlab.com/hm-eand/jenkins-ci.git', 'master', 'TOURET-AATGITLAB')
                     jenkinsjee6.deployInWeblogic('war')
                 }
             }
