@@ -52,6 +52,8 @@ def runRelease(String mavenInstallationId, String jdkInstallationId) {
     }
 }
 
+def copyToGCL(){
 
+}
 
 return this;
